@@ -17,6 +17,7 @@ class Store {
 
     set(key, param) {
         const TIME_LIMIT = 60000
+        const time_stamp = new Date()
 
         if (!this.data[key]) {
             console.log('IP address contains no log data, creating one...')
@@ -31,9 +32,9 @@ class Store {
         }
 
         //give current request a timestamp to reference
-        this.data[key]['request_current'] = new Date()
+        this.data[key]['request_current'] = time_stamp
 
-        if (
+        if ( 
             this.data[key]['request_amount'] == 10 &&
             this.data[key]['request_current'].getTime() - this.data[key]['request_start'].getTime() <= TIME_LIMIT
         ) {
@@ -41,15 +42,17 @@ class Store {
             return false
         } else {
             
-            if (this.data[key]['request_amount'] == 10) {
+            if (
+                this.data[key]['request_amount'] == 10 &&
+                this.data[key]['request_current'].getTime() - this.data[key]['request_start'].getTime() > TIME_LIMIT
+            ) {
                 this.data[key]['request_amount'] = 1
+                this.data[key]['request_start'] = time_stamp
             } else {
                 this.data[key]['request_amount']++
             }
 
-            this.data[key]['request_current'] = new Date()
-            this.data[key]['request_param'] = param
-            
+            this.data[key]['request_param'] = param            
             return true
         }
     }
